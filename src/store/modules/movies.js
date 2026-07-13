@@ -27,6 +27,7 @@ const moviesStore = {
   },
   // getters - это функции, которые позволяют получать данные из state.
   getters: {
+    moviesListGetter: ({ movies }) => movies, // возвращаем объект фильмов из state
     sliceIDs: ({ top250Ids }) => (from, to) => top250Ids.slice(from, to),
     currentPage: ({ currentPage }) => currentPage,
     moviesPerPage: ({ moviesPerPage }) => moviesPerPage
@@ -42,6 +43,12 @@ const moviesStore = {
   },
   // actions - это функции, которые могут быть асинхронными и использоваться для выполнения операций, таких как запросы к API. Они могут вызывать мутации для изменения состояния.
   actions: {
+    // initMoviesStore: {
+    //   handler(context) {
+    //     context.dispatch('fetchMovies'); // вызываем action fetchMovies для загрузки фильмов при инициализации модуля
+    //   },
+    //   root: true
+    // },
     async fetchMovies(context) {
       console.log("Fetching movies...", context); // получение контекста, который содержит state, getters, commit и dispatch
       try {

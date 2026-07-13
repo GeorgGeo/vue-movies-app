@@ -24,4 +24,6 @@ const store = createStore({
   }
 });
 
+// store.dispatch('initMoviesStore'); // вызываем action initMoviesStore для инициализации модуля movies при создании хранилища
+
 export default store;
