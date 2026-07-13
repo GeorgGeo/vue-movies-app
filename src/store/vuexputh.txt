@@ -1,0 +1,42 @@
+App.vue
+   │
+   ▼
+dispatch("movies/fetchMovies")
+   │
+   ▼
+Action fetchMovies()
+   │
+   ▼
+axios → Promise.all()
+   │
+   ▼
+serializeMovies()
+   │
+   ▼
+movies =
+{
+  tt0111161:{...},
+  tt0068646:{...}
+}
+   │
+   ▼
+commit("SET_MOVIES", movies)
+   │
+   ▼
+Vuex ищет mutations["SET_MOVIES"]
+   │
+   ▼
+Вызывает функцию
+SET_MOVIES(state, movies)
+   │
+   ▼
+state.movies = {
+   ...state.movies,
+   ...movies
+}
+   │
+   ▼
+State обновлён
+   │
+   ▼
+Все компоненты, использующие `state.movies`, автоматически получают новые данные и перерисовываются.

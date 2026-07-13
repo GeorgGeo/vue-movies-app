@@ -1,5 +1,8 @@
 
 import axios from 'axios';
+import interceptors from './interceptors';
+
+interceptors(axios);
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -8,5 +11,7 @@ const instance = axios.create({
     plot: 'full'
   }
 });
+
+interceptors(instance);
 
 export default instance;
