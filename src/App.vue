@@ -1,14 +1,21 @@
 <script setup>
 // mapActions - это функция, которая позволяет связывать методы компонента с действиями Vuex. Она принимает объект, где ключи - это имена методов компонента, а значения - это имена действий Vuex. Это позволяет вызывать действия Vuex напрямую из методов компонента, без необходимости использовать this.$store.dispatch.
 // import { mapActions } from 'vuex';
-import { computed, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import MoviesList from './components/MoviesList.vue';
+import PosterBg from './components/PosterBg.vue';
 
 const store = useStore(); // получили доступ к корневому хранилищу Vuex
 
 const moviesList = computed(() => store.getters['movies/moviesListGetter']); // получаем объект фильмов из геттера модуля movies
+
+const posterBg = ref('');
+const onChangePoster = (poster) => {
+  console.log(poster);
+  posterBg.value = poster;
+}
 
 // сделать fetchMovies асинхронной функцией и дождаться выполнения dispatch, если твой action асинхронный
 const fetchMovies = async () => {
@@ -22,8 +29,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <MoviesList :movies-list-props="moviesList" />
+  <div class="position-relative">
+    <PosterBg :poster="posterBg" />
+    <MoviesList :movies-list-props="moviesList" @change-poster="onChangePoster" />
   </div>
 </template>
 
