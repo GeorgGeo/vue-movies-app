@@ -6,6 +6,7 @@ import { useStore } from 'vuex';
 
 import MoviesList from './components/MoviesList.vue';
 import PosterBg from './components/PosterBg.vue';
+import MoviePagination from './components/MoviePagination.vue';
 
 const store = useStore(); // получили доступ к корневому хранилищу Vuex
 
@@ -32,6 +33,7 @@ onMounted(() => {
   <div class="position-relative">
     <PosterBg :poster="posterBg" />
     <MoviesList :movies-list-props="moviesList" @change-poster="onChangePoster" />
+    <MoviePagination />
   </div>
 </template>
 

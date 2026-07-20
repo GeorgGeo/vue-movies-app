@@ -29,17 +29,22 @@ const moviesStore = {
   getters: {
     moviesListGetter: ({ movies }) => movies, // возвращаем объект фильмов из state
     sliceIDs: ({ top250Ids }) => (from, to) => top250Ids.slice(from, to),
-    currentPage: ({ currentPage }) => currentPage,
-    moviesPerPage: ({ moviesPerPage }) => moviesPerPage
+    currentPageGetter: ({ currentPage }) => currentPage,
+    moviesPerPageGetter: ({ moviesPerPage }) => moviesPerPage,
+    totalPagesGetter: ({ top250Ids, moviesPerPage}) => Math.ceil(top250Ids.length / moviesPerPage),
   },
   // mutations - это функции, которые изменяют состояние state. Они должны быть синхронными и единственным способом изменения состояния.
   mutations: {
     SET_MOVIES(state, movies) {
-      state.movies = { ...state.movies, ...movies }; // объединяем старые фильмы с новыми, чтобы не терять уже загруженные данные
+      // state.movies = { ...state.movies, ...movies }; // объединяем старые фильмы с новыми, чтобы не терять уже загруженные данные
+      state.movies = movies; // загружаем только текущие 12 фильмов
     },
     MOVIES(state, value) {
       state.movies = value; // устанавливаем новые фильмы, заменяя старые
     },
+    SET_CURRENT_PAGE(state, page) {
+      state.currentPage = page;
+    }
   },
   // actions - это функции, которые могут быть асинхронными и использоваться для выполнения операций, таких как запросы к API. Они могут вызывать мутации для изменения состояния.
   actions: {
@@ -52,9 +57,9 @@ const moviesStore = {
     async fetchMovies(context) {
       console.log("Fetching movies...", context); // получение контекста, который содержит state, getters, commit и dispatch
       try {
-        const { currentPage, moviesPerPage, sliceIDs } = context.getters; // деструктуризация объекта getters для получения текущей страницы и количества фильмов на странице
-        const from = (currentPage - 1) * moviesPerPage; // вычисление индекса начала среза массива top250Ids
-        const to = from + moviesPerPage; // вычисление индекса конца среза массива top250Ids
+        const { currentPageGetter, moviesPerPageGetter, sliceIDs } = context.getters; // деструктуризация объекта getters для получения текущей страницы и количества фильмов на странице
+        const from = (currentPageGetter - 1) * moviesPerPageGetter; // вычисление индекса начала среза массива top250Ids
+        const to = from + moviesPerPageGetter; // вычисление индекса конца среза массива top250Ids
 
         const moviesToFetch = sliceIDs(from, to); // получение среза массива top250Ids с помощью геттера sliceIDs
         console.log("Movies to fetch:", moviesToFetch); // вывод в консоль массива фильмов, которые нужно получить
