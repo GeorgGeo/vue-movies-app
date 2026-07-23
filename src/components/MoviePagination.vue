@@ -1,6 +1,14 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
+import { useRoute, useRouter } from 'vue-router'; //*!! useRoute() — это чтение, текущий маршрут. Возвращает реактивный объект текущего активного маршрута. Основные свойства: route.path, route.params, route.query и т.д.
+
+// *!! useRouter() — это действие (инструменты для того, чтобы куда-то перейти). Возвращает сам экземпляр роутера. Это объект, который содержит методы для программной навигации. Основные методы: router.push(...) — переход на новую страницу (добавляет запись в историю браузера, работает кнопка "Назад"). router.replace(...) — переход на новую страницу (заменяет текущую запись в истории, кнопка "Назад" вернет на предыдущую, а не на эту). router.go(n) — переход на n шагов вперед/назад в истории (аналог window.history.go).
+
+const route = useRoute();
+const router = useRouter();
+console.log('Route', route.query.page);
+// console.log(router);
 
 const store = useStore();
 const windowWidth = ref(window.innerWidth);
@@ -57,12 +65,22 @@ const changePage = async (page) => {
 
   store.commit('movies/SET_CURRENT_PAGE', page);
 
+  await router.push({
+    query: {
+      page,
+    }
+  })
+
   await store.dispatch('movies/fetchMovies');
 };
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth;
 };
+
+watch(() => route.query.page, (newPage) => {
+  console.log('Новая страница', newPage)
+});
 
 onMounted(() => {
   window.addEventListener('resize', updateWindowWidth);
