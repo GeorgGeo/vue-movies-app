@@ -8,6 +8,7 @@ import { useRoute } from 'vue-router';
 import MoviesList from '@/components/MoviesList.vue';
 import PosterBg from '@/components/PosterBg.vue';
 import MoviePagination from '@/components/MoviePagination.vue';
+import LoaderMovie from '@/components/LoaderMovie.vue';
 
 const store = useStore(); // получили доступ к корневому хранилищу Vuex
 const route = useRoute();
@@ -50,6 +51,7 @@ onMounted(async () => {
 
 <template>
   <div class="position-relative">
+    <LoaderMovie />
     <PosterBg :poster="posterBg" />
     <MoviesList :movies-list-props="moviesList" @change-poster="onChangePoster" />
     <MoviePagination />

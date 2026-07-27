@@ -57,6 +57,7 @@ const moviesStore = {
     async fetchMovies(context) {
       console.log("Fetching movies...", context); // получение контекста, который содержит state, getters, commit и dispatch
       try {
+        context.dispatch('toggleLoader', true, { root: true });
         const { currentPageGetter, moviesPerPageGetter, sliceIDs } = context.getters; // деструктуризация объекта getters для получения текущей страницы и количества фильмов на странице
         const from = (currentPageGetter - 1) * moviesPerPageGetter; // вычисление индекса начала среза массива top250Ids
         const to = from + moviesPerPageGetter; // вычисление индекса конца среза массива top250Ids
@@ -79,6 +80,8 @@ const moviesStore = {
         context.commit('SET_MOVIES', movies); // вызов мутации SET_MOVIES для обновления состояния с новыми фильмами
       } catch (error) {
         console.error("Error fetching movies:", error);
+      } finally {
+        context.dispatch('toggleLoader', false, { root: true });
       }
     }
   },

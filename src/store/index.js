@@ -1,6 +1,7 @@
 
 import { createStore } from 'vuex';
 import movies from './modules/movies';
+import loader from '@/store/modules/loader';
 
 const store = createStore({
   // state - нужен для хранения данных, которые будут использоваться в приложении. Это может быть информация о пользователе, список фильмов, настройки и т.д.
@@ -20,7 +21,8 @@ const store = createStore({
   },
   // modules - это способ разделения состояния на отдельные модули, каждый из которых может иметь свои state, getters, mutations и actions. Это полезно для организации кода в больших приложениях.
   modules: {
-    movies
+    movies,
+    loader,
   }
 });
 

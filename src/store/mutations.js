@@ -1,3 +1,4 @@
 export default {
-  MOVIES: 'SET_MOVIES'
+  MOVIES: 'SET_MOVIES',
+  TOGGLE_LOADER: 'TOGGLE_LOADER',
 }
