@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import MoviesItem from './MoviesItem.vue';
+import ConfirmModal from './ConfirmModal.vue';
 
 const props = defineProps({
   moviesListProps: {
@@ -10,12 +11,27 @@ const props = defineProps({
   }
 });
 
+const showModal = ref(false);
+const selectedMovie = ref(null);
+
+
 const emit = defineEmits(['changePoster']);
 
 const isExist = computed(() => Boolean(Object.keys(props.moviesListProps).length)); // проверяем, есть ли фильмы в объекте
 
 const onMouseOver = (poster) => {
   emit('changePoster', poster);
+};
+
+const onRemoveEvent = (movie) => {
+  selectedMovie.value = movie;
+  showModal.value = true;
+};
+
+const deleteMovie = () => {
+  console.log(selectedMovie.value);
+
+  showModal.value = false;
 }
 </script>
 
@@ -31,7 +47,7 @@ const onMouseOver = (poster) => {
             :key="movie.imdbID"
             class="col-6 col-md-4 col-lg-3 mb-4"
           >
-            <MoviesItem :movie-item-props="movie" @mouseover="onMouseOver(movie.Poster)" />
+            <MoviesItem :movie-item-props="movie" @emit-remove-event="onRemoveEvent" @mouseover="onMouseOver(movie.Poster)" />
           </div>
         </template>
         <!--  -->
@@ -40,6 +56,7 @@ const onMouseOver = (poster) => {
             <p class="text-center fs-4">No movies found.</p>
           </div>
         </template>
+        <ConfirmModal :movie="selectedMovie" :show="showModal" @confirm="deleteMovie" @cancel="showModal = false" />
       </div>
       <!-- /.row -->
     </div>
