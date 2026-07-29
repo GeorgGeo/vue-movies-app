@@ -1,7 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
 import MoviesItem from './MoviesItem.vue';
 import ConfirmModal from './ConfirmModal.vue';
+
+const store = useStore();
 
 const props = defineProps({
   moviesListProps: {
@@ -30,6 +33,7 @@ const onRemoveEvent = (movie) => {
 
 const deleteMovie = () => {
   console.log(selectedMovie.value);
+  store.dispatch('movies/removeMovie', selectedMovie.value.id);
 
   showModal.value = false;
 }

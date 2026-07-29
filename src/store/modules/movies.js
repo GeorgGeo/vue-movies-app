@@ -44,7 +44,10 @@ const moviesStore = {
     },
     SET_CURRENT_PAGE(state, page) {
       state.currentPage = page;
-    }
+    },
+    REMOVE_MOVIE_MUTATION(state, index) {
+      state.top250Ids.splice(index, 1);
+    },
   },
   // actions - это функции, которые могут быть асинхронными и использоваться для выполнения операций, таких как запросы к API. Они могут вызывать мутации для изменения состояния.
   actions: {
@@ -82,6 +85,17 @@ const moviesStore = {
         console.error("Error fetching movies:", error);
       } finally {
         context.dispatch('toggleLoader', false, { root: true });
+      }
+    },
+    removeMovie(context, id) {
+      console.log('removeMovie:', id);
+      const index = context.state.top250Ids.findIndex(item => item === id);
+      console.log('Индекс:', index);
+
+      if (index !== -1) {
+        context.commit('REMOVE_MOVIE_MUTATION', index);
+        console.log(context.state.top250Ids.length);
+        context.dispatch('fetchMovies');
       }
     }
   },
