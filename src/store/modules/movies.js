@@ -97,6 +97,27 @@ const moviesStore = {
         console.log(context.state.top250Ids.length);
         context.dispatch('fetchMovies');
       }
+    },
+    async searchMovies(context, query) {
+      try {
+        context.dispatch('toggleLoader', true, { root: true });
+        // Обращаемся к нашему серверу, получит данные от него по текущему набору пользователей
+        const response = await axios.get(`/?s=${query}`);
+        console.log('Response search query: ', response);
+        // обработать случай, когда OMDb ничего не нашел
+        if (response.Response === 'False') {
+          context.commit('SET_MOVIES', {});
+          return;
+        }
+        // Нужно сериализовать данные и сохранить их в store
+        const movies = serializeMovies(response.Search);
+        context.commit('SET_MOVIES', movies);
+
+      } catch (err) {
+        console.log('Error: ', err);
+      } finally {
+        context.dispatch('toggleLoader', false, { root: true });
+      }
     }
   },
 };
