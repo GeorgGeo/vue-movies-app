@@ -13,6 +13,8 @@ import HeaderMovie from '@/components/HeaderMovie.vue';
 
 const store = useStore(); // получили доступ к корневому хранилищу Vuex
 const route = useRoute();
+// const page = Number(route.query.page) || 1; // получаем текущую страницу из query-параметров URL, если она есть, иначе устанавливаем 1
+// const search = route.query.search || ''; // получаем поисковый запрос из query-параметров URL, если он есть, иначе устанавливаем пустую строку
 
 const moviesList = computed(() => store.getters['movies/moviesListGetter']); // получаем объект фильмов из геттера модуля movies
 
@@ -23,31 +25,52 @@ const onChangePoster = (poster) => {
 }
 
 // сделать fetchMovies асинхронной функцией и дождаться выполнения dispatch, если твой action асинхронный
-const fetchMovies = async () => {
-  // dispatch - это метод, который позволяет вызывать действия Vuex. Он принимает два аргумента: имя действия и объект с параметрами. В данном случае мы вызываем действие fetchMovies из модуля movies.
-  await store.dispatch('movies/fetchMovies'); // вызываем действие fetchMovies из модуля movies
+
+// const fetchMovies = async () => {
+//   // dispatch - это метод, который позволяет вызывать действия Vuex. Он принимает два аргумента: имя действия и объект с параметрами. В данном случае мы вызываем действие fetchMovies из модуля movies.
+//   await store.dispatch('movies/fetchMovies'); // вызываем действие fetchMovies из модуля movies
+// };
+
+const loadMovies = async () => {
+  const page = Number(route.query.page) || 1; // получаем текущую страницу из query-параметров URL, если она есть, иначе устанавливаем 1
+  const search = route.query.search || ''; // получаем поисковый запрос из query-параметров URL, если он есть, иначе устанавливаем пустую строку
+
+  store.commit('movies/SET_CURRENT_PAGE', page); // устанавливаем текущую страницу в хранилище Vuex
+
+  if (search) {
+    await store.dispatch('movies/searchMovies', search); // если есть поисковый запрос, вызываем действие searchMovies из модуля movies
+  } else {
+    await store.dispatch('movies/fetchMovies'); // иначе вызываем действие fetchMovies из модуля movies
+  }
 };
 
+// onMounted(async () => {
+//   const page = Number(route.query.page) || 1;
+
+//   console.log('1. Page from URL:', page);
+
+//   store.commit('movies/SET_CURRENT_PAGE', page);
+
+//   console.log(
+//     '2. Page in Vuex:',
+//     store.getters['movies/currentPageGetter']
+//   );
+
+//   await fetchMovies(); // вызываем функцию fetchMovies при монтировании компонента
+
+//   console.log(
+//     '3. Page after fetch:',
+//     store.getters['movies/currentPageGetter']
+//   );
+
+// });
 onMounted(async () => {
-  const page = Number(route.query.page) || 1;
+  // store.commit('movies/SET_CURRENT_PAGE', page); // устанавливаем текущую страницу в хранилище Vuex при монтировании компонента
+  // console.log('Page from URL:', page);
+  // console.log('Page in Vuex:', store.getters['movies/currentPageGetter']);
 
-  console.log('1. Page from URL:', page);
-
-  store.commit('movies/SET_CURRENT_PAGE', page);
-
-  console.log(
-    '2. Page in Vuex:',
-    store.getters['movies/currentPageGetter']
-  );
-
-  await fetchMovies(); // вызываем функцию fetchMovies при монтировании компонента
-
-  console.log(
-    '3. Page after fetch:',
-    store.getters['movies/currentPageGetter']
-  );
-  
-});
+  await loadMovies(); // вызываем функцию loadMovies при монтировании компонента
+})
 </script>
 
 <template>

@@ -24,6 +24,10 @@ const moviesStore = {
     moviesPerPage: 12,
     currentPage: 1,
     movies: {},
+
+    searchQuery: '', // строка поиска, которая будет использоваться для поиска фильмов
+    isSearch: false,// флаг, который показывает, что мы находимся в режиме поиска
+    totalSearchResults: 0,// количество найденных фильмов при поиске
   },
   // getters - это функции, которые позволяют получать данные из state.
   getters: {
@@ -31,7 +35,14 @@ const moviesStore = {
     sliceIDs: ({ top250Ids }) => (from, to) => top250Ids.slice(from, to),
     currentPageGetter: ({ currentPage }) => currentPage,
     moviesPerPageGetter: ({ moviesPerPage }) => moviesPerPage,
-    totalPagesGetter: ({ top250Ids, moviesPerPage}) => Math.ceil(top250Ids.length / moviesPerPage),
+    // totalPagesGetter: ({ top250Ids, moviesPerPage}) => Math.ceil(top250Ids.length / moviesPerPage),
+    totalPagesGetter: (state) => {
+      if (state.isSearch) {
+        return Math.ceil(state.totalSearchResults / 10);// при поиске OMDb возвращает максимум 10 фильмов на страницу, поэтому делим на 10
+      } else {
+        return Math.ceil(state.top250Ids.length / state.moviesPerPage);
+      }
+    },
   },
   // mutations - это функции, которые изменяют состояние state. Они должны быть синхронными и единственным способом изменения состояния.
   mutations: {
@@ -48,6 +59,18 @@ const moviesStore = {
     REMOVE_MOVIE_MUTATION(state, index) {
       state.top250Ids.splice(index, 1);
     },
+    // мутация для установки флага поиска в state
+    SET_IS_SEARCH(state, value) {
+      state.isSearch = value;
+    },
+    // мутация для установки количества найденных фильмов в state
+    SET_TOTAL_SEARCH_RESULTS(state, value) {
+      state.totalSearchResults = value;
+    },
+    // мутация для установки поискового запроса в state
+    SET_SEARCH_QUERY(state, query) {
+      state.searchQuery = query;
+    },
   },
   // actions - это функции, которые могут быть асинхронными и использоваться для выполнения операций, таких как запросы к API. Они могут вызывать мутации для изменения состояния.
   actions: {
@@ -59,6 +82,9 @@ const moviesStore = {
     // },
     async fetchMovies(context) {
       console.log("Fetching movies...", context); // получение контекста, который содержит state, getters, commit и dispatch
+      context.commit('SET_IS_SEARCH', false); // устанавливаем флаг поиска в false, так как мы загружаем все фильмы, а не ищем по запросу
+      context.commit('SET_TOTAL_SEARCH_RESULTS', 0); // устанавливаем количество найденных фильмов в state, так как мы загружаем все фильмы, а не ищем по запросу
+      context.commit('SET_SEARCH_QUERY', ''); // сохраняем поисковый запрос в state, так как мы загружаем все фильмы, а не ищем по запросу
       try {
         context.dispatch('toggleLoader', true, { root: true });
         const { currentPageGetter, moviesPerPageGetter, sliceIDs } = context.getters; // деструктуризация объекта getters для получения текущей страницы и количества фильмов на странице
@@ -102,8 +128,16 @@ const moviesStore = {
       try {
         context.dispatch('toggleLoader', true, { root: true });
         // Обращаемся к нашему серверу, получит данные от него по текущему набору пользователей
-        const response = await axios.get(`/?s=${query}`);
+        const response = await axios.get(`/?s=${query}&page=${context.state.currentPage}`);// делаем запрос к API с поисковым запросом и текущей страницей
         console.log('Response search query: ', response);
+        console.log('Total search results: ', response.totalResults);
+        console.log('Number of search results: ', response.Search.length);
+
+        context.commit('SET_IS_SEARCH', true); // устанавливаем флаг поиска в true
+        context.commit('SET_TOTAL_SEARCH_RESULTS', Number(response.totalResults)); // устанавливаем количество найденных фильмов в state
+        console.log('Total search results after commit: ', context.state.totalSearchResults);
+        context.commit('SET_SEARCH_QUERY', query); // сохраняем поисковый запрос в state
+
         // обработать случай, когда OMDb ничего не нашел
         if (response.Response === 'False') {
           context.commit('SET_MOVIES', {});
@@ -115,8 +149,16 @@ const moviesStore = {
 
       } catch (err) {
         console.log('Error: ', err);
+        console.log('Error: ', err.message);
       } finally {
         context.dispatch('toggleLoader', false, { root: true });
+      }
+    },
+    async loadMovies(context) {
+      if (context.state.isSearch) {
+        await context.dispatch('searchMovies', context.state.searchQuery);
+      } else {
+        await context.dispatch('fetchMovies');
       }
     }
   },

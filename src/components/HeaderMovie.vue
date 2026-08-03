@@ -1,17 +1,31 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter, useRoute } from 'vue-router';
 
-const searchValue = ref('');
+// const searchValue = ref('');
 let timer = null;
 
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 
+const searchValue = ref(route.query.search || ''); // инициализируем searchValue значением из query-параметров URL, если оно есть, иначе пустой строкой
 const searchMovies = async (query) => {
+  store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
+  // await store.dispatch('movies/loadMovies'); // вызываем loadMovies, который проверяет, был ли поиск или нет, и вызывает соответствующий action
+
+  await router.push({
+    query: {
+      page: 1,
+      search: query,
+    },
+  }); // обновляем URL с поисковым запросом и текущей страницей
+
   await store.dispatch('movies/searchMovies', query);
 }
 
-watch(searchValue, (newValue) => {
+watch(searchValue, async (newValue) => {
   clearTimeout(timer);
 
   // timer = setTimeout(() => {
@@ -20,6 +34,16 @@ watch(searchValue, (newValue) => {
 
   // Не искать пускую строку
   if (!newValue.trim()) {
+    store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
+    // return;
+    await router.push({
+      query: {
+        page: 1,
+      },
+    }); // обновляем URL с текущей страницей
+
+    await store.dispatch('movies/fetchMovies'); // вызываем fetchMovies, который загружает все фильмы, так как поисковый запрос пустой
+    // await store.dispatch('movies/fetchMovies');// Если строка поиска пустая, то загружаем все фильмы
     return;
   }
 

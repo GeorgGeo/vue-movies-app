@@ -67,16 +67,22 @@ const changePage = async (page) => {
 
   await router.push({
     query: {
+      ...route.query, // сохраняем все текущие query-параметры, чтобы не потерять их при смене страницы
       page,
     }
   })
 
-  await store.dispatch('movies/fetchMovies');
+  // await store.dispatch('movies/fetchMovies');
+  await store.dispatch('movies/loadMovies'); // вызываем loadMovies, который проверяет, был ли поиск или нет, и вызывает соответствующий action
 };
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth;
 };
+
+// watch(totalPages, (value) => {
+//     console.log('Total Page', value);
+// });
 
 watch(() => route.query.page, (newPage) => {
   console.log('Новая страница', newPage)
