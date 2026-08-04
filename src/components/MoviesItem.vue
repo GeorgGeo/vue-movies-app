@@ -12,7 +12,7 @@ console.log("Movie item props:", props.movieItemProps);
 const emit = defineEmits(['emitRemoveEvent']);
 
 const posterBg = computed(() => ({
-  backgroundImage: props.movieItemProps.Poster ? `url(${props.movieItemProps.Poster})` : 'none',
+  backgroundImage: props.movieItemProps.Poster && props.movieItemProps.Poster !== 'N/A' ? `url(${props.movieItemProps.Poster})` : 'none',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',

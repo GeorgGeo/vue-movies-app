@@ -22,6 +22,10 @@ const emit = defineEmits(['changePoster']);
 
 const isExist = computed(() => Boolean(Object.keys(props.moviesListProps).length)); // проверяем, есть ли фильмы в объекте
 
+const title = computed(() => {
+  return store.state.movies.isSearch ? `Search results for "${store.state.movies.searchQuery}"` : 'IMDB Top 250';
+});
+
 const onMouseOver = (poster) => {
   emit('changePoster', poster);
 };
@@ -42,7 +46,7 @@ const deleteMovie = () => {
 <template>
   <div>
     <div class="container movie-list">
-      <h3 class="movie-list__title fs-1 mb-5 text-white">IMDB Top 250</h3>
+      <h3 class="movie-list__title fs-1 mb-5 text-white">{{ title }}</h3>
       <!--  -->
       <div class="row">
         <template v-if="isExist">

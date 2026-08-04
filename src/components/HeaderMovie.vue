@@ -7,12 +7,13 @@ import { useRouter, useRoute } from 'vue-router';
 let timer = null;
 
 const store = useStore();
+console.log('Store state:', store.state);
 const router = useRouter();
 const route = useRoute();
 
 const searchValue = ref(route.query.search || ''); // инициализируем searchValue значением из query-параметров URL, если оно есть, иначе пустой строкой
 const searchMovies = async (query) => {
-  store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
+  // store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
   // await store.dispatch('movies/loadMovies'); // вызываем loadMovies, который проверяет, был ли поиск или нет, и вызывает соответствующий action
 
   await router.push({
@@ -22,7 +23,7 @@ const searchMovies = async (query) => {
     },
   }); // обновляем URL с поисковым запросом и текущей страницей
 
-  await store.dispatch('movies/searchMovies', query);
+  // await store.dispatch('movies/searchMovies', query);
 }
 
 watch(searchValue, async (newValue) => {
@@ -34,7 +35,7 @@ watch(searchValue, async (newValue) => {
 
   // Не искать пускую строку
   if (!newValue.trim()) {
-    store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
+    // store.commit('movies/SET_CURRENT_PAGE', 1); // при поиске сбрасываем текущую страницу на 1
     // return;
     await router.push({
       query: {
@@ -42,7 +43,7 @@ watch(searchValue, async (newValue) => {
       },
     }); // обновляем URL с текущей страницей
 
-    await store.dispatch('movies/fetchMovies'); // вызываем fetchMovies, который загружает все фильмы, так как поисковый запрос пустой
+    // await store.dispatch('movies/fetchMovies'); // вызываем fetchMovies, который загружает все фильмы, так как поисковый запрос пустой
     // await store.dispatch('movies/fetchMovies');// Если строка поиска пустая, то загружаем все фильмы
     return;
   }
@@ -50,7 +51,11 @@ watch(searchValue, async (newValue) => {
   timer = setTimeout(() => {
     searchMovies(newValue);
   }, 500);
-})
+});
+
+watch (() => route.query.search, (newSearch) => {
+  searchValue.value = newSearch || ''; // обновляем searchValue при изменении query-параметра search в URL
+});
 </script>
 
 <template>

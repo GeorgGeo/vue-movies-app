@@ -1,7 +1,7 @@
 <script setup>
 // mapActions - это функция, которая позволяет связывать методы компонента с действиями Vuex. Она принимает объект, где ключи - это имена методов компонента, а значения - это имена действий Vuex. Это позволяет вызывать действия Vuex напрямую из методов компонента, без необходимости использовать this.$store.dispatch.
 // import { mapActions } from 'vuex';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 
@@ -64,13 +64,18 @@ const loadMovies = async () => {
 //   );
 
 // });
-onMounted(async () => {
-  // store.commit('movies/SET_CURRENT_PAGE', page); // устанавливаем текущую страницу в хранилище Vuex при монтировании компонента
-  // console.log('Page from URL:', page);
-  // console.log('Page in Vuex:', store.getters['movies/currentPageGetter']);
+// onMounted(async () => {
+//   // store.commit('movies/SET_CURRENT_PAGE', page); // устанавливаем текущую страницу в хранилище Vuex при монтировании компонента
+//   // console.log('Page from URL:', page);
+//   // console.log('Page in Vuex:', store.getters['movies/currentPageGetter']);
 
-  await loadMovies(); // вызываем функцию loadMovies при монтировании компонента
-})
+//   await loadMovies(); // вызываем функцию loadMovies при монтировании компонента
+// })
+
+watch(() => route.query, async () => {
+  await loadMovies();
+}, { immediate: true } // вызываем функцию loadMovies при монтировании компонента и при изменении query-параметров URL
+);
 </script>
 
 <template>

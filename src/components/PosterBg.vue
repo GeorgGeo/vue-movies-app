@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const posterBg = computed(() => ({
-  backgroundImage: props.poster ? `url(${props.poster})` : 'linear-gradient(45deg, rgb(0, 3, 38) 0%, rgb(82, 15, 117) 100%)',
+  backgroundImage: props.poster && props.poster !== 'N/A' ? `url(${props.poster})` : 'linear-gradient(45deg, rgb(0, 3, 38) 0%, rgb(82, 15, 117) 100%)',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
 }));
