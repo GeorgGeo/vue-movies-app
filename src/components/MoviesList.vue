@@ -37,7 +37,14 @@ const onRemoveEvent = (movie) => {
 
 const deleteMovie = () => {
   console.log(selectedMovie.value);
-  store.dispatch('movies/removeMovie', selectedMovie.value.id);
+  store.dispatch('movies/removeMovie', selectedMovie.value.id);// вызываем action removeMovie из модуля movies, передавая id фильма
+
+  store.dispatch('notificationStore/showToastNotification', {
+    type: 'success',
+    title: 'Movie removed',
+    movie: selectedMovie.value.title,
+    text: 'has been removed successfully from the list.',
+  }); // вызываем action showNotification из модуля notificationStore, передавая сообщение
 
   showModal.value = false;
 }

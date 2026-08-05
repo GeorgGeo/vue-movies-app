@@ -10,6 +10,7 @@ import PosterBg from '@/components/PosterBg.vue';
 import MoviePagination from '@/components/MoviePagination.vue';
 import LoaderMovie from '@/components/LoaderMovie.vue';
 import HeaderMovie from '@/components/HeaderMovie.vue';
+import NotificationToast from '@/components/NotificationToast.vue';
 
 const store = useStore(); // получили доступ к корневому хранилищу Vuex
 const route = useRoute();
@@ -81,6 +82,7 @@ watch(() => route.query, async () => {
 <template>
   <div class="position-relative">
     <LoaderMovie />
+    <NotificationToast />
     <PosterBg :poster="posterBg" />
     <HeaderMovie />
     <MoviesList :movies-list-props="moviesList" @change-poster="onChangePoster" />
