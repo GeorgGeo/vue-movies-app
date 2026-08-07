@@ -11,6 +11,24 @@ let toastInstance = null; // создаем переменную для хран
 
 const message = computed(() => store.getters['notificationStore/messagePoolGetter']); // получаем сообщение из геттера модуля notificationStore
 
+const toastClass = computed(() => {
+  console.log('toastClass recalculated, message:', message.value);
+  if (!message.value) {
+    return '';
+  }
+
+  switch (message.value.type) {
+    case 'success':
+      return 'bg-success text-white';
+    case 'danger':
+      return 'bg-danger text-white';
+    case 'warning':
+      return 'bg-warning text-dark';
+    default:
+      return '';
+  }
+})
+
 // Когда компонент смонтируется, создаем экземпляр тоста из bootstrap и передаем ему ссылку на элемент тоста
 // После монтирования Vue помещает DOM-элемент в toastRef.value.
 // Передаем этот DOM-элемент конструктору Bootstrap Toast,
@@ -44,7 +62,7 @@ watch(() => message.value, (newMessage) => {
         aria-live="assertive"
         aria-atomic="true"
       >
-        <div class="toast-header" v-if="message">
+        <div class="toast-header" :class="toastClass" v-if="message">
           <strong class="me-auto">
             {{ message.title }}
           </strong>

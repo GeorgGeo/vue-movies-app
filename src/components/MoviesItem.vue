@@ -9,7 +9,7 @@ const props = defineProps({
 });
 console.log("Movie item props:", props.movieItemProps);
 
-const emit = defineEmits(['emitRemoveEvent']);
+const emit = defineEmits(['emitRemoveEvent', 'showModalInfo']);
 
 const posterBg = computed(() => ({
   backgroundImage: props.movieItemProps.Poster && props.movieItemProps.Poster !== 'N/A' ? `url(${props.movieItemProps.Poster})` : 'none',
@@ -35,7 +35,7 @@ function removeItem() {
       <!-- /.movie-item-info -->
       <div class="movie-item__controls row g-0">
         <div class="col-6 pe-2">
-          <button class="movie-item__button movie-item__button--edit btn btn-primary w-100">Edit</button>
+          <button class="movie-item__button movie-item__button--edit btn btn-primary w-100" @click="emit('showModalInfo', props.movieItemProps.imdbID)">Info</button>
         </div>
         <div class="col-6 ps-2">
           <button class="movie-item__button movie-item__button--remove btn btn-danger w-100" @click="removeItem">Remove</button>

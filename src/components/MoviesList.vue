@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import MoviesItem from './MoviesItem.vue';
 import ConfirmModal from './ConfirmModal.vue';
+import MovieInfoModal from './MovieInfoModal.vue';
 
 const store = useStore();
 
@@ -15,7 +16,8 @@ const props = defineProps({
 });
 
 const showModal = ref(false);
-const selectedMovie = ref(null);
+const showModalInfo = ref(false);
+const selectedMovie = ref(null); // создаем реактивную переменную для хранения выбранного фильма, который будет удаляться
 
 
 const emit = defineEmits(['changePoster']);
@@ -35,6 +37,22 @@ const onRemoveEvent = (movie) => {
   showModal.value = true;
 };
 
+// const showMovieInfo = () => {
+//   // selectedMovie.value = store.state.movies.moviesList.find(movie => movie.imdbID === id);
+//   showModalInfo.value = true;
+// };
+
+const onShowMovieInfo = (id) => {
+  // store.dispatch('movies/fetchMovieDetails', imdbID);
+  // store.commit('movies/setShowModal', true);
+  console.log('Show movie info for ID:', id);
+
+  selectedMovie.value = {
+    Title: 'Test Movie'
+  };
+
+  showModalInfo.value = true;
+};
 const deleteMovie = () => {
   console.log(selectedMovie.value);
   store.dispatch('movies/removeMovie', selectedMovie.value.id);// вызываем action removeMovie из модуля movies, передавая id фильма
@@ -62,8 +80,10 @@ const deleteMovie = () => {
             :key="movie.imdbID"
             class="col-6 col-md-4 col-lg-3 mb-4"
           >
-            <MoviesItem :movie-item-props="movie" @emit-remove-event="onRemoveEvent" @mouseover="onMouseOver(movie.Poster)" />
+            <MoviesItem :movie-item-props="movie" @emit-remove-event="onRemoveEvent" @mouseover="onMouseOver(movie.Poster)"
+            @show-modal-info="onShowMovieInfo" />
           </div>
+          <!--  -->
         </template>
         <!--  -->
         <template v-else>
@@ -72,6 +92,8 @@ const deleteMovie = () => {
           </div>
         </template>
         <ConfirmModal :movie="selectedMovie" :show="showModal" @confirm="deleteMovie" @cancel="showModal = false" />
+        <!--  -->
+        <MovieInfoModal :movie="selectedMovie" :show="showModalInfo" @close="showModalInfo = false" />
       </div>
       <!-- /.row -->
     </div>

@@ -149,6 +149,12 @@ const moviesStore = {
 
       } catch (err) {
         console.log('Error: ', err);
+        context.dispatch('notificationStore/showToastNotification', {
+          type: 'danger',
+          title: 'Search Error',
+          movie: '',
+          text: err.message,
+        }, { root: true });// вызываем action showToastNotification из notificationStore для отображения уведомления об ошибке
         console.log('Error: ', err.message);
       } finally {
         context.dispatch('toggleLoader', false, { root: true });
